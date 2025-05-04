@@ -4,11 +4,20 @@ import streamlit as st
 
 class OpenAIIntegration:
     def __init__(self):
-        # Try to get API key from environment variables
-        api_key = os.getenv('OPENAI_API_KEY')
-        if not api_key:
-            st.error("OPENAI_API_KEY not found in environment variables")
-            raise ValueError("OPENAI_API_KEY not found in environment variables")
+        # Try to get API key from Streamlit secrets first
+        try:
+            api_key = st.secrets["OPENAI_API_KEY"]
+            print("Found API key in Streamlit secrets")
+        except Exception as e:
+            print(f"Error accessing Streamlit secrets: {str(e)}")
+            # Fallback to environment variables
+            api_key = os.getenv('OPENAI_API_KEY')
+            if api_key:
+                print("Found API key in environment variables")
+            else:
+                print("API key not found in environment variables")
+                st.error("OPENAI_API_KEY not found in Streamlit secrets or environment variables")
+                raise ValueError("OPENAI_API_KEY not found in Streamlit secrets or environment variables")
         
         openai.api_key = api_key
         print("Successfully set OpenAI API key")
