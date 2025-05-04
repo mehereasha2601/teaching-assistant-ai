@@ -1,22 +1,17 @@
 import os
 import openai
-from dotenv import load_dotenv
 import streamlit as st
 
 class OpenAIIntegration:
     def __init__(self):
-        # Try to get API key from Streamlit secrets first
-        try:
-            api_key = st.secrets["OPENAI_API_KEY"]
-        except:
-            # If not in secrets, try environment variables
-            load_dotenv()
-            api_key = os.getenv('OPENAI_API_KEY')
-            
+        # Try to get API key from environment variables
+        api_key = os.getenv('OPENAI_API_KEY')
         if not api_key:
-            raise ValueError("OPENAI_API_KEY not found in environment variables or Streamlit secrets")
+            st.error("OPENAI_API_KEY not found in environment variables")
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
         
         openai.api_key = api_key
+        print("Successfully set OpenAI API key")
         
         # Default model to use
         self.model = "gpt-3.5-turbo"
@@ -49,7 +44,9 @@ class OpenAIIntegration:
             return response.choices[0].message.content
             
         except Exception as e:
-            print(f"Error getting response from OpenAI: {str(e)}")
+            error_msg = f"Error getting response from OpenAI: {str(e)}"
+            print(error_msg)
+            st.error(error_msg)
             return None
 
 # Example usage
