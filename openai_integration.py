@@ -1,16 +1,20 @@
 import os
 import openai
 from dotenv import load_dotenv
+import streamlit as st
 
 class OpenAIIntegration:
     def __init__(self):
-        # Load environment variables from .env file
-        load_dotenv()
-        
-        # Initialize OpenAI client
-        api_key = os.getenv('OPENAI_API_KEY')
+        # Try to get API key from Streamlit secrets first
+        try:
+            api_key = st.secrets["OPENAI_API_KEY"]
+        except:
+            # If not in secrets, try environment variables
+            load_dotenv()
+            api_key = os.getenv('OPENAI_API_KEY')
+            
         if not api_key:
-            raise ValueError("OPENAI_API_KEY not found in environment variables")
+            raise ValueError("OPENAI_API_KEY not found in environment variables or Streamlit secrets")
         
         openai.api_key = api_key
         
