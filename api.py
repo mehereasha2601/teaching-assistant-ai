@@ -27,8 +27,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize OpenAI integration
-ai = OpenAIIntegration()
+# Initialize OpenAI integration with error handling
+try:
+    ai = OpenAIIntegration()
+except Exception as e:
+    print(f"Error initializing OpenAI integration: {str(e)}")
+    raise
 
 # Store for ongoing requests
 ongoing_requests = {}
